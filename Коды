@@ -1,0 +1,373 @@
+1)
+def insertion_sort(arr):
+    """Сортировка вставками для сортировки элементов в корзинах."""
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        # Перемещаем элементы arr[0..i-1], которые больше ключа, на одну позицию вперед
+        while j >= 0 and key < arr[j]:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+
+def bucket_sort(arr):
+    """Основная функция блочной сортировки."""
+    if len(arr) == 0:
+        return arr
+
+    # 1. Определяем количество корзин
+    num_buckets = 10  # Количество корзин
+    max_value = max(arr)
+    min_value = min(arr)
+    bucket_range = (max_value - min_value) / num_buckets
+
+    # 2. Создаем корзины
+    buckets = [[] for _ in range(num_buckets)]
+
+    # 3. Распределяем элементы по корзинам
+    for num in arr:
+        index = int((num - min_value) // bucket_range)
+        if index == num_buckets:  # Обработка крайних значений
+            index -= 1
+        buckets[index].append(num)
+
+    # 4. Сортируем каждую корзину и объединяем их
+    sorted_array = []
+    for bucket in buckets:
+        insertion_sort(bucket)  # Сортируем каждую корзину с помощью сортировки вставками
+        sorted_array.extend(bucket)  # Объединяем отсортированные корзины
+
+    return sorted_array
+if __name__ == "__main__":
+    data = [0.78, 0.17, 0.39, 0.26, 0.72, 0.94, 0.21, 0.55, 0.63, 0.87]
+    print("Исходный массив:", data)
+    sorted_data = bucket_sort(data)
+    print("Отсортированный массив:", sorted_data)
+
+
+
+2) def flip(arr, k):
+    """
+    Функция для переворота подмассива до индекса k.
+    arr: список, который нужно перевернуть.
+    k: индекс до которого нужно перевернуть (включительно).
+    """
+    start = 0  # Начинаем с начала массива
+    while start < k:  # Пока стартовый индекс меньше k
+        arr[start], arr[k] = arr[k], arr[start]  # Меняем местами элементы
+        start += 1  # Увеличиваем стартовый индекс
+        k -= 1  # Уменьшаем конечный индекс
+
+def find_max_index(arr, n):
+    """
+    Функция для поиска индекса максимального элемента в массиве.
+    arr: список, в котором ищем максимальный элемент.
+    n: количество элементов в массиве.
+    Возвращает индекс максимального элемента.
+    """
+    max_index = 0  # Предполагаем, что первый элемент максимален
+    for i in range(1, n):  # Проходим по всем элементам массива
+        if arr[i] > arr[max_index]:  # Если текущий элемент больше максимального
+            max_index = i  # Обновляем индекс максимального элемента
+    return max_index  # Возвращаем индекс максимального элемента
+
+def pancake_sort(arr):
+    """
+    Функция для сортировки массива с помощью блинной сортировки.
+    arr: список, который нужно отсортировать.
+    """
+    n = len(arr)  # Получаем длину массива
+    for curr_size in range(n, 1, -1):  # Проходим по массиву от конца к началу
+        max_index = find_max_index(arr, curr_size)  # Находим индекс максимального элемента
+        if max_index != curr_size - 1:  # Если максимальный элемент не на своем месте
+            if max_index != 0:  # Если максимальный элемент не первый
+                flip(arr, max_index)  # Переворачиваем подмассив до max_index
+            flip(arr, curr_size - 1)  # Переворачиваем весь подмассив до curr_size - 1
+
+# Пример использования:
+arr = [3, 6, 1, 5, 2, 4]
+print("Исходный массив:", arr)
+pancake_sort(arr)  # Сортируем массив
+print("Отсортированный массив:", arr)
+
+
+3)import time
+
+def bead_sort(arr):
+    def gravity(arr):
+        rows = [[1]*val + [0]*(len(arr)-val) for val in arr]
+        transposed = list(map(list, zip(*rows)))
+        for col in transposed:
+            col.sort(reverse=True)
+        rows = list(map(list, zip(*transposed)))
+        return [sum(row) for row in rows]
+
+    return gravity(arr)
+
+# Функция вывода шагов сортировки (для наглядности)
+def show_steps(arr):
+    steps = []
+    while True:
+        next_arr = bead_sort(arr)
+        steps.append(next_arr[:])
+        if next_arr == sorted(arr):
+            break
+        arr = next_arr
+    return steps
+
+# Пример использования:
+if __name__ == "__main__":
+    array = [5, 3, 1, 7, 4, 6, 2]
+    print("Исходный массив:", array)
+    start_time = time.time()
+    sorted_array = bead_sort(array)
+    end_time = time.time()
+    print("Отсортированный массив:", sorted_array)
+    print(f"Время сортировки: {end_time - start_time:.6f} секунд")
+
+    # Показываем шаги сортировки
+    steps = show_steps(array)
+    print("\nПроцесс сортировки:")
+    for step in steps:
+        print(step)
+2) Результат:
+Исходный массив: [5, 3, 1, 7, 4, 6, 2]
+Отсортированный массив: [7, 6, 5, 4, 3, 2, 1]
+
+
+
+
+
+
+4)import math
+
+def jump_search(arr, target):
+    """
+    Алгоритм поиска скачками (Jump Search)
+    
+    Args:
+        arr: отсортированный список элементов
+        target: искомый элемент
+    
+    Returns:
+        int: индекс элемента или -1 если не найден
+    """
+    n = len(arr)
+    
+    # Если массив пустой
+    if n == 0:
+        return -1
+    
+    # Определяем размер прыжка (оптимально √n)
+    jump_size = int(math.sqrt(n))
+    
+    # Находим блок, где может находиться элемент
+    prev = 0
+    step = jump_size
+    
+    # Прыгаем вперед, пока не найдем блок с элементом >= target
+    while step < n and arr[min(step, n-1)] < target:
+        prev = step
+        step += jump_size
+        
+        # Если вышли за границы массива
+        if prev >= n:
+            return -1
+    
+    # Линейный поиск в найденном блоке
+    for i in range(prev, min(step, n)):
+        if arr[i] == target:
+            return i
+    
+    return -1
+
+def jump_search_with_steps(arr, target):
+    """
+    Версия с выводом шагов для демонстрации работы алгоритма
+    """
+    n = len(arr)
+    
+    if n == 0:
+        print("Массив пустой")
+        return -1
+    
+    jump_size = int(math.sqrt(n))
+    print(f"Размер массива: {n}")
+    print(f"Размер прыжка: {jump_size}")
+    print(f"Ищем элемент: {target}")
+    print()
+    
+    prev = 0
+    step = jump_size
+    
+    print("Фаза прыжков:")
+    step_count = 0
+    
+    while step < n and arr[min(step, n-1)] < target:
+        print(f"Шаг {step_count + 1}: проверяем индекс {min(step, n-1)} = {arr[min(step, n-1)]}")
+        prev = step
+        step += jump_size
+        step_count += 1
+        
+        if prev >= n:
+            print("Вышли за границы массива")
+            return -1
+    
+    print(f"Найден блок: индексы от {prev} до {min(step, n-1)}")
+    print()
+    
+    print("Фаза линейного поиска в блоке:")
+    for i in range(prev, min(step, n)):
+        print(f"Проверяем индекс {i}: {arr[i]}")
+        if arr[i] == target:
+            print(f"Элемент найден на позиции {i}")
+            return i
+    
+    print("Элемент не найден")
+    return -1
+if __name__ == "__main__":
+    # Пример 1: простой случай
+    print("=== Пример 1 ===")
+    arr1 = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
+    target1 = 55
+    
+    result1 = jump_search_with_steps(arr1, target1)
+    print(f"Результат: {result1}")
+    print()
+
+
+
+
+
+5)def exponential_search(arr, target):
+    """
+    Алгоритм экспоненциального поиска (Exponential Search)
+    
+    Args:
+        arr: отсортированный список элементов
+        target: искомый элемент
+    
+    Returns:
+        int: индекс элемента или -1 если не найден
+    """
+    n = len(arr)
+    
+    # Если массив пустой
+    if n == 0:
+        return -1
+    
+    # Если первый элемент - искомый
+    if arr[0] == target:
+        return 0
+    
+    # Находим диапазон для бинарного поиска экспоненциальным увеличением границы
+    bound = 1
+    while bound < n and arr[bound] <= target:
+        bound *= 2
+    
+    # Выполняем бинарный поиск в найденном диапазоне
+    left = bound // 2
+    right = min(bound, n - 1)
+    
+    return binary_search(arr, target, left, right)
+
+def binary_search(arr, target, left, right):
+    """
+    Вспомогательная функция бинарного поиска в заданном диапазоне
+    """
+    while left <= right:
+        mid = left + (right - left) // 2
+        
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1
+
+def exponential_search_with_steps(arr, target):
+    """
+    Версия с выводом шагов для демонстрации работы алгоритма
+    """
+    n = len(arr)
+    
+    if n == 0:
+        print("Массив пустой")
+        return -1
+    
+    print(f"Массив: {arr}")
+    print(f"Ищем элемент: {target}")
+    print()
+    
+    # Проверяем первый элемент
+    print("1. Проверяем первый элемент:")
+    print(f"   arr[0] = {arr[0]}")
+    if arr[0] == target:
+        print(f"   Элемент найден на позиции 0")
+        return 0
+    print("   Первый элемент не равен целевому, продолжаем...")
+    print()
+    
+    # Экспоненциально увеличиваем границу
+    print("2. Фаза экспоненциального увеличения границы:")
+    bound = 1
+    step = 1
+    
+    while bound < n and arr[bound] <= target:
+        print(f"   Шаг {step}: bound = {bound}, arr[{bound}] = {arr[bound]}")
+        bound *= 2
+        step += 1
+    
+    # Определяем границы для бинарного поиска
+    left = bound // 2
+    right = min(bound, n - 1)
+    
+    print(f"   Найден диапазон для бинарного поиска: от {left} до {right}")
+    print(f"   Элементы в диапазоне: {arr[left:right+1]}")
+    print()
+    
+    # Выполняем бинарный поиск
+    print("3. Фаза бинарного поиска:")
+    result = binary_search_with_steps(arr, target, left, right)
+    
+    return result
+
+def binary_search_with_steps(arr, target, left, right):
+    """
+    Вспомогательная функция бинарного поиска с выводом шагов
+    """
+    step = 1
+    
+    while left <= right:
+        mid = left + (right - left) // 2
+        print(f"   Шаг {step}: left={left}, right={right}, mid={mid}, arr[{mid}]={arr[mid]}")
+        
+        if arr[mid] == target:
+            print(f"   Элемент найден на позиции {mid}")
+            return mid
+        elif arr[mid] < target:
+            print(f"   arr[{mid}] < {target}, ищем в правой половине")
+            left = mid + 1
+        else:
+            print(f"   arr[{mid}] > {target}, ищем в левой половине")
+            right = mid - 1
+        
+        step += 1
+    
+    print("   Элемент не найден в диапазоне")
+    return -1
+
+# Демонстрация работы алгоритма
+if __name__ == "__main__":
+    print("=== Экспоненциальный поиск (Exponential Search) ===\n")
+    
+    # Пример 1: простой случай
+    print("=== Пример 1 ===")
+    arr1 = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
+    target1 = 17
+    
+    result1 = exponential_search_with_steps(arr1, target1)
+    print(f"Результат: {result1}")
+    print()
