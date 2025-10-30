@@ -371,3 +371,64 @@ if __name__ == "__main__":
     result1 = exponential_search_with_steps(arr1, target1)
     print(f"Результат: {result1}")
     print()
+6)def ternary_search(arr, target):
+    """
+    Тернарный поиск в отсортированном массиве
+    
+    Args:
+        arr: отсортированный список
+        target: искомый элемент
+    
+    Returns:
+        индекс элемента или -1 если не найден
+    """
+    left = 0
+    right = len(arr) - 1
+    
+    while left <= right:
+        # Делим диапазон на три части
+        mid1 = left + (right - left) // 3
+        mid2 = right - (right - left) // 3
+        
+        print(f"Диапазон: [{left}, {right}], mid1={mid1}, mid2={mid2}")
+        
+        # Проверяем граничные точки
+        if arr[mid1] == target:
+            return mid1
+        if arr[mid2] == target:
+            return mid2
+        
+        # Определяем в какой трети продолжать поиск
+        if target < arr[mid1]:
+            right = mid1 - 1
+        elif target > arr[mid2]:
+            left = mid2 + 1
+        else:
+            left = mid1 + 1
+            right = mid2 - 1
+    
+    return -1
+
+# Пример использования
+if __name__ == "__main__":
+    # Отсортированный массив для поиска
+    arr = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25]
+    target = 13
+    
+    print("Массив:", arr)
+    print(f"Поиск элемента: {target}")
+    
+    result = ternary_search(arr, target)
+    
+    if result != -1:
+        print(f"Элемент найден на позиции: {result}")
+    else:
+        print("Элемент не найден")
+
+
+Массив: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25]
+Поиск элемента: 13
+Диапазон: [0, 12], mid1=4, mid2=8
+Диапазон: [5, 7], mid1=5, mid2=7
+Диапазон: [6, 6], mid1=6, mid2=6
+Элемент найден на позиции: 6
